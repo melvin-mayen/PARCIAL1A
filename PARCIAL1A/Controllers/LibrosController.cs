@@ -30,24 +30,40 @@ namespace PARCIAL1A.Controllers
 
         }
 
-        [HttpGet]
-        [Route("GetById/{id}")]
-        public IActionResult Get(int id)
-        {
-            Libros? Libro = (from e in _autoresContexto?.Libros where e.Id == id select e).FirstOrDefault();
 
-            if (Libro == null)
+
+        [HttpGet]
+        [Route("FiltrarPorAutor/{filter}")]
+        public IActionResult findByName(String filter)
+        {
+            var listadoEquipo = (from au in _autoresContexto.autores
+                                 join auLi in _autoresContexto.AutorLibro
+                                    on au.id equals auLi.AutorId
+                                 join li in _autoresContexto.Libros
+                                    on auLi.LibroId equals li.Id
+                                 where au.nombre.Contains(filter)
+                                 select new
+                                 {
+                                     idLibro = li.Id,
+                                     tituloLibro = li.Titulo,
+                                     autorLibro = au.nombre
+
+                                 }).ToList();
+            if (listadoEquipo.Count() == 0)
             {
                 return NotFound();
             }
+            return Ok(listadoEquipo);
 
-            return Ok(Libro);
-        }
+             
+            
+            
+            }
 
 
-        //crear
+            //crear
 
-        [HttpPost]
+            [HttpPost]
         [Route("add")]
         public IActionResult GuardarAutor([FromBody] Libros autorLibro)
         {

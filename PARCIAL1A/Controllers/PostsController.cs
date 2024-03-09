@@ -30,18 +30,34 @@ namespace PARCIAL1A.Controllers
 
         }
 
-        [HttpGet]
-        [Route("GetById/{id}")]
-        public IActionResult Get(int id)
-        {
-            Posts? Posts = (from e in _autoresContexto?.Posts where e.id == id select e).FirstOrDefault();
 
-            if (Posts == null)
+        [HttpGet]
+        [Route("FiltrarPorLibro/{filter}")]
+        public IActionResult FiltrarPorLibro(String filter)
+        {
+            var listadoPost = (from li in _autoresContexto.Libros
+                               join auli in _autoresContexto.AutorLibro
+                                  on li.Id equals auli.LibroId
+                               join au in _autoresContexto.autores
+                                  on auli.AutorId equals au.id
+                               join ps in _autoresContexto.Posts
+                                  on au.id equals ps.id
+                               where li.Titulo.Contains(filter)
+                               select new
+                               {
+                                   idPosts = ps.id,
+                                   TituloPosts = ps.Titulo,
+                                   contenidoPosts = ps.Contenido,
+                                   fechaPublicacion = ps.FechaPublicacion,
+                                   nombreAutor = au.nombre,
+                                   libroTitulo = li.Titulo
+
+                               }).ToList();
+            if (listadoPost.Count() == 0)
             {
                 return NotFound();
             }
-
-            return Ok(Posts);
+            return Ok(listadoPost);
         }
 
 

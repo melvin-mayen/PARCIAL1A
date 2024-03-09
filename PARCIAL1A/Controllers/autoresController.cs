@@ -17,6 +17,7 @@ namespace PARCIAL1A.Controllers
             _autoresContexto = autoresContexto;
         }
 
+        // READ
 
         [HttpGet]
         [Route("GetAll")]
@@ -33,30 +34,27 @@ namespace PARCIAL1A.Controllers
 
 
         [HttpGet]
-        [Route("GetById/{id}")]
-        public IActionResult Get(int id)
+        [Route("FiltrarPorAutor/{filter}")]
+        public IActionResult FiltrarPorAutor(String filter)
         {
-            autores? autor = (from e in _autoresContexto?.autores where e.id == id select e).FirstOrDefault();
+            var listadoPost = (from au in _autoresContexto.autores
+                               join ps in _autoresContexto.Posts
+                                  on au.id equals ps.id
+                               where au.nombre.Contains(filter)
+                               select new
+                               {
+                                   idPosts = ps.id,
+                                   TituloPosts = ps.Titulo,
+                                   contenidoPosts = ps.Contenido,
+                                   fechaPublicacion = ps.FechaPublicacion,
+                                   nombreAutor = au.nombre,
 
-            if (autor == null)
+                               }).Take(20).ToList();
+            if (listadoPost.Count() == 0)
             {
                 return NotFound();
             }
-
-            return Ok(autor);
-        }
-
-        //BUSCAR POR DESCRIPCION 
-        [HttpGet]
-        [Route("Find/{filtro}")]
-        public IActionResult FindByDescription(string filtro)
-        {
-            autores? autor = (from e in _autoresContexto.autores where e.nombre.Contains(filtro) select e).FirstOrDefault();
-
-            if (autor == null)
-            { return NotFound(); }
-
-            return Ok(autor);
+            return Ok(listadoPost);
         }
 
 

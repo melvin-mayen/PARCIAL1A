@@ -31,19 +31,6 @@ namespace PARCIAL1A.Controllers
 
         }
 
-        [HttpGet]
-        [Route("GetById/{id}")]
-        public IActionResult Get(int id)
-        {
-            autores? autor = (from e in _autoresContexto?.autores where e.id == id select e).FirstOrDefault();
-
-            if (autor == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(autor);
-        }
 
 
         //crear
