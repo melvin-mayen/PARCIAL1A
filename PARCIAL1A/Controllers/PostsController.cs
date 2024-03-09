@@ -32,7 +32,7 @@ namespace PARCIAL1A.Controllers
 
 
         [HttpGet]
-        [Route("FiltrarPorLibro/{filter}")]
+        [Route("FiltrarPorLibroo/{filter}")]
         public IActionResult FiltrarPorLibro(String filter)
         {
             var listadoPost = (from li in _autoresContexto.Libros
